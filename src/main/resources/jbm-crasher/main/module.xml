@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="jbm-crasher" xmlns="urn:jboss:module:1.6">
+  <resources>
+    <resource-root path="jbm-crasher-0.1.0-SNAPSHOT.jar" />
+  </resources>
+
+  <dependencies>
+    <module name="jdk.jfr" />
+  </dependencies>
+</module>
