@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.jboss.modules</groupId>
       <artifactId>jboss-modules</artifactId>
-      <version>1.9.1-SNAPSHOT</version>
+      <version>1.9.1.Final</version>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -80,7 +80,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.github.marschall.jfr.crasher.JfrCrasher</mainClass>
+              <mainClass>com.github.marschall.jbm.crasher.Crasher</mainClass>
             </manifest>
           </archive>
         </configuration>

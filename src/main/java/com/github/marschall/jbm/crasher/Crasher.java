@@ -15,16 +15,16 @@ import org.jboss.modules.ModuleLoader;
 public class Crasher {
 
   private volatile ClassLoader nextLoader;
-  
-  void crash() throws ReflectiveOperationException {
-    
+
+  void crash(String moduleRoot) throws ReflectiveOperationException {
+
     int numberOfThreads = Runtime.getRuntime().availableProcessors();
     if (numberOfThreads <= 1) {
       throw new IllegalStateException("requies more than one thread");
     }
     ExecutorService threadPool = Executors.newFixedThreadPool(numberOfThreads);
     CyclicBarrier cyclicBarrier = new CyclicBarrier(numberOfThreads, () -> {
-      this.nextLoader = newModuleClassLoader();
+      this.nextLoader = newModuleClassLoader(moduleRoot);
     });
     for (int i = 0; i < numberOfThreads; i++) {
       threadPool.submit(new LoadingRunnable(cyclicBarrier));
@@ -33,22 +33,28 @@ public class Crasher {
   }
 
   public static void main(String[] args) throws ModuleLoadException, ReflectiveOperationException {
-    new Crasher().crash();
+    String moduleRoot;
+    if (args.length == 0) {
+      moduleRoot = "src/main/resources";
+    } else {
+      moduleRoot = args[0];
+    }
+    new Crasher().crash(moduleRoot);
   }
 
-  private ClassLoader newModuleClassLoader() {
+  private ClassLoader newModuleClassLoader(String moduleRoot) {
     Module module;
     try {
-      module = newModule();
+      module = newModule(moduleRoot);
     } catch (ModuleLoadException e) {
       throw e.toError();
     }
     return module.getClassLoader();
   }
 
-  private static Module newModule() throws ModuleLoadException {
-//    ModuleFinder[] finders = new ModuleFinder[]{new MemoryModuleFinder(), JDKModuleFinder.getInstance()};
-    File localModule = new File("/Users/marschall/git/jbm-crasher/src/main/resources");
+  private static Module newModule(String moduleRoot) throws ModuleLoadException {
+    //    ModuleFinder[] finders = new ModuleFinder[]{new MemoryModuleFinder(), JDKModuleFinder.getInstance()};
+    File localModule = new File(moduleRoot);
     ModuleFinder[] finders = new ModuleFinder[]{new LocalModuleFinder(new File[] {localModule}), JDKModuleFinder.getInstance()};
     ModuleLoader loader = new ModuleLoader(finders);
     Module module = loader.loadModule("jbm-crasher");
